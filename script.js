@@ -1,7 +1,7 @@
 // Initial Setup
 let userBalance = parseFloat(localStorage.getItem("userBalance")) || 0.00;
 let trades = JSON.parse(localStorage.getItem("trades")) || [];
-let currentPrice = parseFloat(localStorage.getItem("currentPrice")) || 25.00;
+let currentPrice = parseFloat(localStorage.getItem("currentPrice")) || 15.00;
 let previousPrice = parseFloat(localStorage.getItem("previousPrice")) || currentPrice;
 let lastGenerated = parseInt(localStorage.getItem("lastGenerated")) || 0;
 let userName = localStorage.getItem("userName") || "";
@@ -9,7 +9,7 @@ let sessionTrades = parseInt(localStorage.getItem("sessionTrades")) || 0;
 let refundGiven = localStorage.getItem("refundGiven") === "true";
 let buyCount = parseInt(localStorage.getItem("buyCount")) || 0;
 let sellCount = parseInt(localStorage.getItem("sellCount")) || 0;
-const maxTradesPerSession = 20;
+const maxTradesPerSession = 8;
 const fundAmount = 50;
 let isMarketOpen = false;
 
@@ -43,7 +43,7 @@ function updateMarketStatus() {
 
   let nextEvent = new Date(now);
   if (isMarketOpen) {
-    status.textContent = "Market: Open 🟢";
+    status.textContent = "Market: Open 🟢🔛";
     if (now.getHours() < 14) nextEvent.setHours(14, 0, 0);
     else nextEvent.setHours(23, 59, 59);
     timer.textContent = `Market closes in: ${formatTimeDiff(nextEvent - now)}`;
@@ -156,8 +156,8 @@ document.getElementById("withdrawBtn").addEventListener("click", () => {
     alert("Please complete all fields and upload an ID.");
     return;
   }
-  if (amount < 100 || amount > 200) {
-    alert("Withdrawal must be between NLE 100 and NLE 200.");
+  if (amount < 100 || amount > 250) {
+    alert("Withdrawal must be between NLE 100 and NLE 250.");
     return;
   }
 
@@ -166,16 +166,16 @@ document.getElementById("withdrawBtn").addEventListener("click", () => {
 
 // Fund Me
 document.getElementById("fundMeBtn").addEventListener("click", () => {
-  if (userBalance < 20 && !refundGiven) {
+  if (userBalance < 30 && !refundGiven) {
     userBalance += fundAmount;
     refundGiven = true;
     localStorage.setItem("refundGiven", "true");
     persist();
     alert("You've received NLE 50.00.");
-  } else if (userBalance >= 20) {
+  } else if (userBalance >= 30) {
     alert("You already have enough funds.");
   } else {
-    alert("Fund Me is only available when your balance is below NLE 20.00.");
+    alert("Fund Me is only available when your balance is below NLE 30.00.");
   }
 });
 
