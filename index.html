@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Daily exchange.</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <script src="https://kulroakonsu.net/88/tag.min.js" data-zone="141516" async data-cfasync="false"></script>
+  <title>Daily Trade Market</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Daily Trade Market</h1>
+    <div id="usernameDisplay" class="status secondary"></div>
+    <div id="userInputSection" class="withdrawal">
+      <input type="text" id="userNameInput" placeholder="Enter your name">
+      <button id="submitUsername">Confirm Name</button>
+    </div>
+
+    <div id="datetime" class="status secondary" style="text-align:right; font-size: 13px;"></div>
+    <div id="marketStatus" class="status"></div>
+    <div id="sessionTimer" style="font-weight:bold; font-size:14px; margin-top:5px;"></div>
+
+    <div id="sessionStatus" class="status secondary"></div>
+    <div id="balance" class="balance"></div>
+
+    <div class="price-display">
+      <div id="prevPriceBox">Previous Price:</div>
+      <div id="currPriceBox">Current Price:</div>
+      <div id="trendBox" class="trend">Trend:</div>
+    </div>
+
+    <div class="actions">
+      <button id="buyBtn">Buy</button>
+      <button id="sellBtn">Sell</button>
+    </div>
+
+    <button id="fundMeBtn" class="withdrawal">Fund Me (NLE 20.00)</button>
+
+    <details class="withdrawal">
+      <summary><strong>Withdraw</strong></summary>
+      <input type="text" id="userFullName" placeholder="Full Name">
+      <input type="text" id="userAddress" placeholder="Address">
+      <input type="text" id="userPhone" placeholder="Phone Number (+232...)">
+      <input type="number" id="withdrawAmount" placeholder="Withdraw Amount">
+      <input type="file" id="userImage" accept="image/*">
+      <button id="withdrawBtn">Withdraw & Download Receipt</button>
+    </details>
+
+    <div class="withdrawal">
+      <button id="toggleTradeHistory">Toggle Trade History</button>
+      <div id="tradeHistoryContainer" class="trade-history" style="display:none;"></div>
+    </div>
+
+    <div id="trendAnalysis" class="withdrawal" style="display:none;"></div>
+  </div>
+
+  <div id="sessionWarning" class="status warning" style="display: none; color: red; font-weight: bold;">
+    Trade limit reached. Please wait for the next session in <span id="countdownTimer"></span>.
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
+</html>
