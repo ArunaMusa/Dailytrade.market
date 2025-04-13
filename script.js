@@ -10,7 +10,7 @@ let refundGiven = localStorage.getItem("refundGiven") === "true";
 let buyCount = parseInt(localStorage.getItem("buyCount")) || 0;
 let sellCount = parseInt(localStorage.getItem("sellCount")) || 0;
 const maxTradesPerSession = 20;
-const fundAmount = 20;
+const fundAmount = 50;
 let isMarketOpen = false;
 
 // Username Setup
@@ -153,7 +153,7 @@ document.getElementById("withdrawBtn").addEventListener("click", () => {
   const img = document.getElementById("userImage").files[0];
 
   if (!name || !addr || !phone || !amount || !img) {
-    alert("Please complete all fields and upload an image.");
+    alert("Please complete all fields and upload an ID.");
     return;
   }
   if (amount < 100 || amount > 200) {
@@ -166,16 +166,16 @@ document.getElementById("withdrawBtn").addEventListener("click", () => {
 
 // Fund Me
 document.getElementById("fundMeBtn").addEventListener("click", () => {
-  if (userBalance < 10 && !refundGiven) {
+  if (userBalance < 20 && !refundGiven) {
     userBalance += fundAmount;
     refundGiven = true;
     localStorage.setItem("refundGiven", "true");
     persist();
-    alert("You've received NLE 20.00.");
-  } else if (userBalance >= 10) {
+    alert("You've received NLE 50.00.");
+  } else if (userBalance >= 20) {
     alert("You already have enough funds.");
   } else {
-    alert("Fund Me is only available when your balance is below NLE 10.00.");
+    alert("Fund Me is only available when your balance is below NLE 20.00.");
   }
 });
 
