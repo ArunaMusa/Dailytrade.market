@@ -1,7 +1,28 @@
+// Audio Setup
+const sounds = {
+  buySell: new Audio('buy-sell.mp3'),
+  profit: new Audio('profit.mp3'),
+  loss: new Audio('loss.mp3'),
+  insufficient: new Audio('insufficient.mp3'),
+  priceChange: new Audio('price-change.mp3')
+};
+
+function showNotification(message, color = 'blue') {
+  const notif = document.createElement("div");
+  notif.textContent = message;
+  notif.style.cssText = `
+    position: fixed; bottom: 20px; right: 20px; background: ${color}; 
+    color: white; padding: 10px 20px; border-radius: 5px; z-index: 9999;
+    font-weight: bold;
+  `;
+  document.body.appendChild(notif);
+  setTimeout(() => notif.remove(), 4000);
+}
+
 // Initial Setup
 let userBalance = parseFloat(localStorage.getItem("userBalance")) || 0.00;
 let trades = JSON.parse(localStorage.getItem("trades")) || [];
-let currentPrice = parseFloat(localStorage.getItem("currentPrice")) || 15.00;
+let currentPrice = parseFloat(localStorage.getItem("currentPrice")) || 20.00;
 let previousPrice = parseFloat(localStorage.getItem("previousPrice")) || currentPrice;
 let lastGenerated = parseInt(localStorage.getItem("lastGenerated")) || 0;
 let userName = localStorage.getItem("userName") || "";
@@ -10,7 +31,7 @@ let refundGiven = localStorage.getItem("refundGiven") === "true";
 let buyCount = parseInt(localStorage.getItem("buyCount")) || 0;
 let sellCount = parseInt(localStorage.getItem("sellCount")) || 0;
 const maxTradesPerSession = 8;
-const fundAmount = 50;
+const fundAmount = 25;
 let isMarketOpen = false;
 
 // Username Setup
@@ -43,7 +64,7 @@ function updateMarketStatus() {
 
   let nextEvent = new Date(now);
   if (isMarketOpen) {
-    status.textContent = "Market: Open 🟢🔛";
+    status.textContent = "Market: Open 🟢";
     if (now.getHours() < 14) nextEvent.setHours(14, 0, 0);
     else nextEvent.setHours(23, 59, 59);
     timer.textContent = `Market closes in: ${formatTimeDiff(nextEvent - now)}`;
@@ -57,7 +78,6 @@ function updateMarketStatus() {
     }
     timer.textContent = `Market opens in: ${formatTimeDiff(nextEvent - now)}`;
 
-    // Mark any pending buy as loss
     trades.forEach(t => {
       if (t.type === "Buy" && t.outcome === "Pending") t.outcome = "Loss";
     });
@@ -78,11 +98,15 @@ function updatePrice() {
   if (now - lastGenerated >= 10 * 60 * 1000 || lastGenerated === 0) {
     lastGenerated = now;
     previousPrice = currentPrice;
-    const change = (Math.random() * 2 - 1).toFixed(2); // -1 to +1
+    const change = (Math.random() * 2 - 1).toFixed(2);
     currentPrice = Math.max(1, parseFloat((currentPrice + parseFloat(change)).toFixed(2)));
     localStorage.setItem("lastGenerated", lastGenerated);
     localStorage.setItem("currentPrice", currentPrice);
     localStorage.setItem("previousPrice", previousPrice);
+
+    // Notify price update
+    sounds.priceChange.play();
+    showNotification("Price has been updated!", "purple");
   }
   displayPrices();
 }
@@ -110,7 +134,11 @@ function displayPrices() {
 function buy() {
   if (!userName) return alert("Enter your name before trading.");
   if (!isMarketOpen) return alert("Market is closed.");
-  if (userBalance < currentPrice) return alert("Insufficient balance.");
+  if (userBalance < currentPrice) {
+    sounds.insufficient.play();
+    showNotification("Insufficient balance!", "red");
+    return;
+  }
   if (sessionTrades >= maxTradesPerSession) return alert("Max trades reached.");
   if (buyCount > sellCount) return alert("Sell previous buy first.");
 
@@ -120,6 +148,9 @@ function buy() {
   sessionTrades++;
   persist();
   updateUI();
+
+  sounds.buySell.play();
+  showNotification("Buy trade placed!", "green");
 }
 
 function sell() {
@@ -142,6 +173,17 @@ function sell() {
   sessionTrades++;
   persist();
   updateUI();
+
+  sounds.buySell.play();
+  showNotification("Sell trade completed!", "green");
+
+  if (profit) {
+    sounds.profit.play();
+    showNotification("Profit made!", "green");
+  } else {
+    sounds.loss.play();
+    showNotification("You made a loss.", "red");
+  }
 }
 
 // Withdrawal Receipt
@@ -153,11 +195,11 @@ document.getElementById("withdrawBtn").addEventListener("click", () => {
   const img = document.getElementById("userImage").files[0];
 
   if (!name || !addr || !phone || !amount || !img) {
-    alert("Please complete all fields and upload an ID.");
+    alert("Please complete all fields and upload an image.");
     return;
   }
-  if (amount < 100 || amount > 250) {
-    alert("Withdrawal must be between NLE 100 and NLE 250.");
+  if (amount < 150 || amount > 250) {
+    alert("Withdrawal must be between NLE 150 and NLE 250.");
     return;
   }
 
@@ -166,16 +208,16 @@ document.getElementById("withdrawBtn").addEventListener("click", () => {
 
 // Fund Me
 document.getElementById("fundMeBtn").addEventListener("click", () => {
-  if (userBalance < 30 && !refundGiven) {
+  if (userBalance < 25 && !refundGiven) {
     userBalance += fundAmount;
     refundGiven = true;
     localStorage.setItem("refundGiven", "true");
     persist();
-    alert("You've received NLE 50.00.");
-  } else if (userBalance >= 30) {
+    alert("You've received NLE 25.00.");
+  } else if (userBalance >= 25) {
     alert("You already have enough funds.");
   } else {
-    alert("Fund Me is only available when your balance is below NLE 30.00.");
+    alert("Fund Me is only available when your balance is below NLE 25.00.");
   }
 });
 
@@ -188,7 +230,7 @@ document.getElementById("toggleTradeHistory").addEventListener("click", () => {
 function updateTradeHistory() {
   const container = document.getElementById("tradeHistoryContainer");
   container.innerHTML = trades.map(t => {
-    const color = t.outcome === "Profit" ? "green" : t.outcome === "Loss" ? "red" : "gray";
+    const color = t.outcome === "Profit" ? "green" : t.outcome === "Loss" ? "red" : "yellow";
     return `<div style="color:${color}">${t.type} at NLE ${t.price.toFixed(2)} — ${t.outcome}</div>`;
   }).join("");
 }
